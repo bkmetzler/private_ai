@@ -49,11 +49,16 @@ class FingerprintGenerator:
         fingerprints: List[Fingerprint] = []
         for label in window_labels:
             window_minutes = WINDOWS_MINUTES[label]
-            rolling = self._candles.rolling(window=window_minutes, min_periods=window_minutes)
-            for end_ts, frame in rolling:
-                if len(frame) < window_minutes:
+            if len(self._candles) < window_minutes:
+                continue
+
+            for end_idx in range(window_minutes - 1, len(self._candles)):
+                frame = self._candles.iloc[end_idx - window_minutes + 1 : end_idx + 1]
+                if frame.empty:
                     continue
+
                 start_ts = frame.index[0]
+                end_ts = frame.index[-1]
                 start_close = float(frame["Close"].iloc[0])
                 end_close = float(frame["Close"].iloc[-1])
                 absolute_change = end_close - start_close

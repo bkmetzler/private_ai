@@ -27,6 +27,14 @@ This repository provides a small AI-flavored data pipeline that downloads Bitcoi
 
    The script fetches the last seven days of one-minute BTC-USD candles (you can customize this with `--period` or by passing an explicit `--start-date`).  It emits a concise table to the console, saves the fingerprints and change index as JSON, and mirrors every raw candle into `data/bitcoin_prices.db`.
 
+3. **Match the current period against the catalog**
+
+   ```bash
+   python -m src.match_fingerprint --window 1h --fingerprints output/fingerprints.json
+   ```
+
+   Provide the window you want to inspect (any of the windows listed below). The helper downloads the latest candles, builds the fingerprint for that window, and compares it against the catalog. If it has never been seen before, it will be appended to `fingerprints.json` automatically.
+
 ## Output structure
 - `fingerprints`: list of fingerprints for every window and position.
 - `price_changes`: list of price changes between consecutive candles (timestamp + delta).
